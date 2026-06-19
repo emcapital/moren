@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moren Timepiece - Official Warranty Certificate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .font-luxury { font-family: 'Cinzel', serif; }
+        .font-sans-clean { font-family: 'Montserrat', sans-serif; }
+
+        /* Smooth Cinematic Animations */
+        @keyframes ambientGlow {
+            0%, 100% { transform: translate(-50%, 0) scale(1); opacity: 0.4; filter: blur(100px); }
+            50% { transform: translate(-50%, -10%) scale(1.2); opacity: 0.7; filter: blur(130px); }
+        }
+        @keyframes revealCard {
+            0% { transform: translateY(20px) scale(0.98); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        @keyframes pulseBorder {
+            0%, 100% { border-color: rgba(245, 158, 11, 0.2); }
+            50% { border-color: rgba(245, 158, 11, 0.4); }
+        }
+
+        .animate-ambient { animation: ambientGlow 8s ease-in-out infinite; }
+        .animate-reveal { animation: revealCard 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-pulse-border { animation: pulseBorder 3s infinite; }
+    </style>
+</head>
+<body class="bg-[#050608] font-sans-clean text-slate-300 min-h-screen flex items-center justify-center p-3 sm:p-6 relative overflow-x-hidden">
+
+    <!-- Ambient background glow effect -->
+    <div class="absolute top-1/4 left-1/2 w-72 h-72 sm:w-80 sm:h-80 bg-amber-500/5 rounded-full pointer-events-none animate-ambient"></div>
+
+    <!-- Main Receipt Container -->
+    <div id="receipt-card" class="w-full max-w-md sm:max-w-xl bg-[#0d0f14] border border-slate-800/80 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-8 relative overflow-hidden hidden transition-all duration-500 animate-reveal hover:border-slate-700/50 hover:shadow-amber-500/[0.02]">
+        
+        <!-- Decorative Border Accent -->
+        <div class="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent"></div>
+
+        <!-- Top Header Branding Row -->
+        <div class="text-center space-y-2 pb-5 sm:pb-6 border-b border-slate-800/60 group">
+            <div class="w-10 h-10 rounded-full border border-amber-500/30 flex items-center justify-center text-amber-400 text-sm font-luxury bg-amber-950/20 font-bold mx-auto transition-all duration-500 group-hover:rotate-[360deg] group-hover:border-amber-400">M</div>
+            <h1 class="font-luxury text-base sm:text-lg tracking-[0.25em] sm:tracking-[0.3em] text-slate-100 pt-1 transition-all duration-300 group-hover:tracking-[0.35em]">MOREN</h1>
+            <p class="text-[9px] sm:text-[10px] uppercase tracking-widest text-amber-500/80 font-medium">Official Asset Warranty Ledger Certificate</p>
+        </div>
+
+        <!-- Warranty Coverage Status Banner Segment -->
+        <div class="mt-5 sm:mt-6 p-3 sm:p-4 rounded-xl bg-[#11141c]/50 border border-slate-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 transition-all duration-300 hover:bg-[#141822]/70 animate-pulse-border">
+            <div class="space-y-0.5">
+                <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block">Coverage Protection Status (14-Day Terms)</span>
+                <span id="out-status-text" class="text-[10px] sm:text-[11px] font-medium tracking-wide text-slate-300">Evaluating temporal ledger milestones...</span>
+            </div>
+            <div id="out-status-badge" class="shrink-0 w-full sm:w-auto text-left sm:text-right">
+                <!-- Status Badge Injected Here Dynamically -->
+            </div>
+        </div>
+
+        <!-- Dynamic Content Blueprint Values Grid -->
+        <div class="py-5 sm:py-6 space-y-4 text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-slate-900 pb-4 group">
+                <div class="transition-transform duration-300 hover:translate-x-1">
+                    <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Reference / Watch ID</span>
+                    <span id="out-ref" class="text-slate-200 font-mono font-bold text-xs sm:text-sm tracking-wide break-words block"></span>
+                </div>
+                <div class="transition-transform duration-300 hover:translate-x-1">
+                    <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Receipt Number</span>
+                    <span id="out-receipt" class="text-slate-200 font-medium block break-words"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-slate-900 pb-4">
+                <div class="transition-transform duration-300 hover:translate-x-1">
+                    <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Variant Spec</span>
+                    <span id="out-variant" class="text-slate-200 block break-words"></span>
+                </div>
+                <div class="transition-transform duration-300 hover:translate-x-1">
+                    <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Purchase Timeline</span>
+                    <span id="out-timeline" class="text-slate-200 block break-words"></span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                <div class="space-y-3 transition-transform duration-300 hover:translate-x-1">
+                    <div>
+                        <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Settlement Method</span>
+                        <span id="out-payment" class="text-slate-200 block break-words font-medium"></span>
+                    </div>
+                    <div id="payment-ref-container">
+                        <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Payment Ref No.</span>
+                        <span id="out-payment-ref" class="text-slate-400 font-mono text-[11px] block break-words"></span>
+                    </div>
+                </div>
+                <div class="transition-transform duration-300 hover:translate-x-1">
+                    <span class="text-slate-500 uppercase text-[8px] sm:text-[9px] tracking-wider block mb-0.5">Total Certified Price</span>
+                    <span id="out-price" class="text-emerald-400 font-mono font-bold text-sm sm:text-base block"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Authentication Stamp Details -->
+        <div class="mt-2 pt-5 sm:pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-left">
+            <div class="w-full sm:max-w-[70%]">
+                <p class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 mb-0.5">Ledger Block Key Validation Identifier</p>
+                <p id="out-code" class="text-[9px] sm:text-[10px] font-mono text-amber-500/70 select-all break-all"></p>
+            </div>
+            <div class="shrink-0 w-full sm:w-auto flex justify-start sm:justify-end">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[8px] sm:text-[9px] font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm shadow-emerald-500/5">
+                    <svg class="w-3 h-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Secured Node
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error/Fallback Loading Message Anchor Info Placeholder -->
+    <div id="status-message" class="text-xs uppercase tracking-widest text-slate-500 font-medium font-luxury animate-pulse text-center px-4">
+        Establishing connection to secure ledger system...
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAoyAOyfJsqlK_Pe6pmfA5cTexx0IOcH9g",
+            authDomain: "moren-325fd.firebaseapp.com",
+            databaseURL: "https://moren-325fd-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "moren-325fd",
+            storageBucket: "moren-325fd.firebasestorage.app",
+            messagingSenderId: "1015241645428",
+            appId: "1:1015241645428:web:2d6366a8bdc38a5fb72021",
+            measurementId: "G-1HDSV3V8P1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const statusMessage = document.getElementById('status-message');
+        const receiptCard = document.getElementById('receipt-card');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const codeKey = urlParams.get('code');
+
+        function formatToLongDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const dateObj = new Date(dateStr);
+            if (isNaN(dateObj.getTime())) return dateStr;
+            return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function convertTimeTo12Hour(timeStr) {
+            if (!timeStr) return '';
+            const [hoursStr, minutesStr] = timeStr.split(':');
+            let hours = parseInt(hoursStr, 10);
+            const minutes = minutesStr || '00';
+            
+            if (isNaN(hours)) return timeStr;
+            
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        function calculateWarrantyStatus(purchaseDateStr) {
+            if (!purchaseDateStr) return { text: "Unknown Status", badge: "bg-slate-800 text-slate-400" };
+            
+            const purchaseDate = new Date(purchaseDateStr);
+            const expirationDate = new Date(purchaseDate);
+            expirationDate.setDate(purchaseDate.getDate() + 14);
+            
+            const currentDate = new Date();
+            const formattedExpiry = formatToLongDate(expirationDate);
+            
+            if (currentDate <= expirationDate) {
+                return {
+                    text: `Protected under active coverage until ${formattedExpiry}.`,
+                    badge: `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 w-full justify-center sm:w-auto shadow-sm shadow-emerald-500/5 animate-pulse">Active Coverage</span>`
+                };
+            } else {
+                return {
+                    text: "The official 14-day warranty coverage phase for this registry asset has expired.",
+                    badge: `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wider uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20 w-full justify-center sm:w-auto">Term Expired</span>`
+                };
+            }
+        }
+
+        async function fetchReceiptData() {
+            if (!codeKey) {
+                statusMessage.innerText = "Error: Invalid link context parameters.";
+                return;
+            }
+
+            try {
+                const nodeRef = ref(database, `warranties/${codeKey.trim()}`);
+                const snapshot = await get(nodeRef);
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    
+                    document.getElementById('out-ref').innerText = data.referenceNumber || 'N/A';
+                    document.getElementById('out-receipt').innerText = data.receiptNumber || 'N/A';
+                    document.getElementById('out-variant').innerText = data.variantNumber || 'N/A';
+                    
+                    const longDateStr = formatToLongDate(data.purchaseDate);
+                    const time12HourStr = convertTimeTo12Hour(data.purchaseTime);
+                    const timelineString = time12HourStr ? `${longDateStr} @ ${time12HourStr}` : longDateStr;
+                    
+                    document.getElementById('out-timeline').innerText = timelineString;
+                    document.getElementById('out-payment').innerText = data.paymentMode || 'N/A';
+                    
+                    const pRefContainer = document.getElementById('payment-ref-container');
+                    if (data.paymentReference && data.paymentReference.trim() !== '') {
+                        document.getElementById('out-payment-ref').innerText = data.paymentReference;
+                        pRefContainer.classList.remove('hidden');
+                    } else {
+                        pRefContainer.classList.add('hidden');
+                    }
+                    
+                    document.getElementById('out-price').innerText = `₱${Number(data.totalPrice || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    document.getElementById('out-code').innerText = codeKey;
+
+                    const statusEvaluation = calculateWarrantyStatus(data.purchaseDate);
+                    document.getElementById('out-status-text').innerText = statusEvaluation.text;
+                    document.getElementById('out-status-badge').innerHTML = statusEvaluation.badge;
+
+                    statusMessage.classList.add('hidden');
+                    receiptCard.classList.remove('hidden');
+                } else {
+                    statusMessage.innerText = "Error: Warranty Record could not be traced on the ledger.";
+                }
+            } catch (err) {
+                console.error(err);
+                statusMessage.innerText = "Network Error: System connection lost.";
+            }
+        }
+
+        fetchReceiptData();
+    </script>
+</body>
+</html>

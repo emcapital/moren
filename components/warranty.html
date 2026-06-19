@@ -12,218 +12,222 @@
     <style>
         .font-luxury { font-family: 'Cinzel', serif; }
         .font-sans-clean { font-family: 'Montserrat', sans-serif; }
-        .sidebar-transition { transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .content-transition { transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="time"]::-webkit-calendar-picker-indicator {
             filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(10deg);
             cursor: pointer;
+            transition: all 0.3s;
         }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover,
+        input[type="time"]::-webkit-calendar-picker-indicator:hover {
+            transform: scale(1.15);
+        }
+
+        /* Sophisticated UI Dynamics */
+        @keyframes pageLoadUp {
+            0% { transform: translateY(15px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-load { animation: pageLoadUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
-<body class="bg-[#050608] font-sans-clean text-slate-300 min-h-screen flex overflow-hidden relative">
+<body id="app-body" class="bg-[#050608] font-sans-clean text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden transition-opacity duration-700 opacity-100">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-30 hidden md:hidden transition-opacity duration-300"></div>
-
-    <!-- Notification Container (Bottom Right Toast Anchor) -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
-
-    <!-- Main Content Region -->
-    <div id="main-content" class="content-transition flex-1 flex flex-col min-w-0 md:ml-64 h-screen overflow-y-auto order-2">
-        
-        <header class="h-20 border-b border-slate-800/60 bg-[#0d0f14]/40 backdrop-blur-md px-6 flex items-center justify-between shrink-0 relative z-20">
-            <div class="flex items-center gap-4">
-                <button id="mobile-toggle-btn" class="md:hidden text-slate-400 hover:text-amber-400 p-1 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    <!-- Premium Custom Logout Confirmation Center Modal Overlay with Blur Background -->
+    <div id="logout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050608]/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+        <div id="modal-container" class="w-full max-w-sm bg-[#0d0f14]/95 border border-slate-800/80 rounded-xl shadow-2xl p-6 text-center transform scale-95 transition-all duration-300">
+            <!-- Normal Confirmation State Context -->
+            <div id="modal-prompt-state" class="space-y-4">
+                <div class="w-12 h-12 rounded-full border border-rose-500/20 bg-rose-500/5 flex items-center justify-center text-rose-400 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
                     </svg>
-                </button>
-                <h2 class="font-luxury text-sm tracking-widest text-slate-100 hidden sm:block">WARRANTY PLATFORM SYSTEM</h2>
-                <p id="loading-indicator" class="text-xs text-amber-500/80 font-medium">Registry Secure</p>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-3 border-l border-slate-800/60 pl-4 h-8 text-left">
-                    <div id="user-avatar" class="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-200 uppercase">
-                        OP
-                    </div>
-                    <div class="hidden sm:block">
-                        <p id="user-email-display" class="text-[10px] font-semibold text-slate-300 tracking-wide">Loading Session...</p>
-                        <p class="text-[9px] text-amber-500/80 tracking-wider">Live Connection Status</p>
-                    </div>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="font-luxury text-xs tracking-widest text-slate-100 uppercase">Terminate Session</h3>
+                    <p class="text-[11px] text-slate-400">Are you sure you want to disconnect from the secure engine platform?</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3 pt-2 text-[10px] font-semibold tracking-wider uppercase">
+                    <button id="modal-cancel-btn" class="py-2.5 px-4 bg-slate-800 text-slate-400 border border-slate-700/60 rounded-lg hover:bg-slate-700 hover:text-slate-200 transition-all duration-200 transform active:scale-95">
+                        Cancel
+                    </button>
+                    <button id="modal-confirm-btn" class="py-2.5 px-4 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-lg hover:bg-rose-500/20 transition-all duration-200 transform active:scale-95">
+                        Confirm
+                    </button>
                 </div>
             </div>
-        </header>
 
-        <main class="p-6 space-y-6 max-w-7xl w-full mx-auto flex-1">
-            
-            <!-- Main Layout Split -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Left Column: Registration Form -->
-                <div class="lg:col-span-2 bg-[#0d0f14] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl flex flex-col">
-                    <div class="p-5 border-b border-slate-800/50 bg-[#11141c]/40 flex justify-between items-center">
-                        <h4 class="font-luxury text-xs tracking-wider text-slate-200 uppercase">Issue New Asset Warranty</h4>
-                        <span class="text-[9px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-semibold">RTDB Push Node</span>
-                    </div>
-                    
-                    <form id="warranty-form" class="p-6 space-y-4 text-xs">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Date of Purchase</label>
-                                <input type="date" id="form-date" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Time of Purchase</label>
-                                <input type="time" id="form-time" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Receipt Number</label>
-                                <input type="text" id="form-receipt" required placeholder="REC-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Variant Number</label>
-                                <input type="text" id="form-variant" required placeholder="v1, Gold, Leather, etc." class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Reference Number (Watch ID)</label>
-                                <input type="text" id="form-reference" required placeholder="REF-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Total Price ($)</label>
-                                <input type="number" step="0.01" id="form-price" required placeholder="0.00" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Mode of Payment</label>
-                            <select id="form-payment" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 transition">
-                                <option value="" disabled selected class="text-slate-600">Select Processing Option</option>
-                                <option value="Bank Wire Transfer">Bank Wire Transfer</option>
-                                <option value="Crypto Asset (BTC/ETH)">Crypto Asset (BTC/ETH)</option>
-                                <option value="Credit Escrow Card">Credit Escrow Card</option>
-                                <option value="Vault Financed Token">Vault Financed Token</option>
-                            </select>
-                        </div>
-
-                        <div class="pt-4">
-                            <button type="submit" class="w-full py-3 px-4 bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 rounded-lg text-xs font-semibold tracking-wider uppercase transition">
-                                Push to Realtime Ledger Node
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Right Column: Verification Lookup / Shared Links Output -->
-                <div class="space-y-6">
-                    <div class="bg-[#0d0f14] border border-slate-800/50 p-5 rounded-xl space-y-4 shadow-xl">
-                        <div>
-                            <h4 class="font-luxury text-xs text-slate-200 tracking-wider uppercase">Asset Warranty Query</h4>
-                            <p class="text-[10px] text-slate-500 mt-1">Check verification strings directly via your unique URL generation footprint.</p>
-                        </div>
-                        <hr class="border-slate-800/60">
-                        <div class="space-y-3 text-xs">
-                            <div class="space-y-1">
-                                <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium">Warranty Tracking Code</label>
-                                <input type="text" id="lookup-code" placeholder="Enter Unique URL Code Key" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 transition">
-                            </div>
-                            <button id="lookup-btn" class="w-full py-2.5 px-4 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-slate-100 rounded-lg text-xs font-semibold tracking-wider uppercase transition">
-                                Search Generated Code
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic output bucket area for successfully generated items -->
-                    <div id="output-card" class="hidden bg-[#0a0c11] border border-amber-500/20 p-5 rounded-xl space-y-3 shadow-2xl">
-                        <h5 class="font-luxury text-[10px] text-amber-400 tracking-widest uppercase font-semibold">Active Ledger Generation Details</h5>
-                        <hr class="border-slate-800/60">
-                        <div class="space-y-2 text-[11px]">
-                            <p><span class="text-slate-500">Ref:</span> <span id="out-ref" class="text-slate-200 font-mono"></span></p>
-                            <p><span class="text-slate-500">Receipt:</span> <span id="out-receipt" class="text-slate-200"></span></p>
-                            <p><span class="text-slate-500">Total Valuation:</span> <span id="out-price" class="text-emerald-400 font-mono"></span></p>
-                            <div class="pt-2">
-                                <label class="text-[9px] uppercase tracking-wider text-slate-400 block mb-1">Shareable Warranty URL String</label>
-                                <input type="text" id="out-url" readonly class="w-full bg-[#050608] text-amber-500 border border-slate-800 text-[10px] font-mono rounded p-2 focus:outline-none select-all">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            <!-- Active Loading Execution State Context -->
+            <div id="modal-loading-state" class="hidden flex flex-col items-center justify-center py-6 gap-4">
+                <svg class="animate-spin h-7 w-7 text-amber-500/80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="font-luxury text-[9px] tracking-[0.25em] text-amber-500/80 uppercase">Terminating Operator Node Session</p>
             </div>
-        </main>
+        </div>
     </div>
 
-    <!-- Left Sidebar Component -->
-    <aside id="sidebar" class="sidebar-transition fixed top-0 bottom-0 left-0 z-40 w-64 md:w-64 bg-[#0d0f14] border-r border-slate-800/60 flex flex-col justify-between -translate-x-full md:translate-x-0 overflow-hidden order-1">
-        <div>
-            <div class="h-20 flex items-center justify-between px-6 border-b border-slate-800/40 shrink-0">
-                <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-8 h-8 rounded-full border border-amber-500/40 flex items-center justify-center text-amber-400 text-xs font-luxury bg-amber-950/30 font-bold shrink-0">M</div>
-                    <span id="brand-name" class="font-luxury text-xs tracking-[0.2em] text-slate-200 whitespace-nowrap opacity-100 transition-opacity duration-200">MOREN</span>
-                </div>
-                <button id="collapse-toggle-btn" class="hidden md:flex text-slate-500 hover:text-amber-400 transition-colors p-1 rounded hover:bg-slate-800/40">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4" id="toggle-arrow">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                    </svg>
-                </button>
-            </div>
+    <!-- Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
 
-            <nav class="p-4 space-y-1.5">
-                <a href="dashboard.html" class="flex items-center justify-start gap-4 px-4 py-3 text-slate-400 hover:text-amber-400 hover:bg-slate-800/30 border-l-2 border-transparent hover:border-amber-500/40 rounded-r-lg transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
-                    </svg>
-                    <span class="sidebar-label text-xs uppercase tracking-wider font-medium opacity-100 transition-opacity duration-200 whitespace-nowrap">Console Index</span>
-                </a>
-
-                <a href="warranty.html" class="flex items-center justify-start gap-4 px-4 py-3 bg-amber-950/20 border-l-2 border-amber-500 text-amber-400 rounded-r-lg transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
-                    <span class="sidebar-label text-xs uppercase tracking-wider font-medium opacity-100 transition-opacity duration-200 whitespace-nowrap">Warranty Registry</span>
-                </a>
-
-                <a href="#" class="flex items-center justify-start gap-4 px-4 py-3 text-slate-400 hover:text-amber-400 hover:bg-slate-800/30 border-l-2 border-transparent hover:border-amber-500/40 rounded-r-lg transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 a9 9 0 0 1 18 0Z" />
-                    </svg>
-                    <span class="sidebar-label text-xs uppercase tracking-wider font-medium opacity-100 transition-opacity duration-200 whitespace-nowrap">Timepieces</span>
-                </a>
-
-                <a href="#" class="flex items-center justify-start gap-4 px-4 py-3 text-slate-400 hover:text-amber-400 hover:bg-slate-800/30 border-l-2 border-transparent hover:border-amber-500/40 rounded-r-lg transition-all group">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                    </svg>
-                    <span class="sidebar-label text-xs uppercase tracking-wider font-medium opacity-100 transition-opacity duration-200 whitespace-nowrap">Vault Orders</span>
-                </a>
-            </nav>
+    <!-- Main Header View -->
+    <header class="h-20 border-b border-slate-800/60 bg-[#0d0f14]/40 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between shrink-0 relative z-20">
+        <div class="flex items-center gap-3 group cursor-pointer">
+            <div class="w-8 h-8 rounded-full border border-amber-500/40 flex items-center justify-center text-amber-400 text-xs font-luxury bg-amber-950/30 font-bold transition-all duration-500 group-hover:rotate-[360deg] group-hover:border-amber-400">M</div>
+            <h2 class="font-luxury text-xs sm:text-sm tracking-widest text-slate-100 transition-all duration-300 group-hover:tracking-[0.14em]">MOREN WARRANTY MANAGEMENT</h2>
         </div>
 
-        <div class="p-4 border-t border-slate-800/40 bg-[#0a0c10]/40 shrink-0">
-            <button id="logout-btn" class="w-full flex items-center justify-start gap-4 px-4 py-3 text-rose-400/80 hover:text-rose-400 hover:bg-rose-950/10 rounded-lg transition-all group">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
+        <div class="flex items-center gap-4 sm:gap-6">
+            <div class="flex items-center gap-3 border-l border-slate-800/60 pl-4 h-8 text-left hidden sm:flex transition-transform duration-300 hover:translate-x-0.5">
+                <div id="user-avatar" class="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-200 uppercase shadow-inner">OP</div>
+                <div>
+                    <p id="user-email-display" class="text-[10px] font-semibold text-slate-300 tracking-wide">Loading Session...</p>
+                    <p class="text-[9px] text-emerald-500/80 tracking-wider flex items-center gap-1">
+                        <span class="w-1 h-1 rounded-full bg-emerald-400 animate-ping"></span> Secure Operator Node
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Responsive Logout Button: Only Icon on Mobile, Complete Metadata Profile on desktop Layout -->
+            <button id="logout-btn" class="group flex items-center gap-2 p-2.5 sm:px-3.5 sm:py-1.5 rounded-lg border border-rose-500/20 bg-rose-500/5 text-rose-400 hover:bg-rose-500/10 text-[10px] font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-95 hover:shadow-lg hover:shadow-rose-950/20" title="Log Out Session">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 sm:w-3.5 sm:h-3.5 transition-transform duration-300 group-hover:-translate-x-0.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
                 </svg>
-                <span class="sidebar-label text-xs uppercase tracking-wider font-semibold opacity-100 transition-opacity duration-200 whitespace-nowrap">Secure Log Out</span>
+                <span class="hidden sm:inline">Log Out</span>
             </button>
         </div>
-    </aside>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="p-4 sm:p-8 space-y-6 max-w-7xl w-full mx-auto flex-1 opacity-0 animate-load">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left Column: Registration Form -->
+            <div class="lg:col-span-2 bg-[#0d0f14] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl flex flex-col transition-all duration-300 hover:border-slate-800">
+                <div class="p-5 border-b border-slate-800/50 bg-[#11141c]/40 flex justify-between items-center">
+                    <h4 class="font-luxury text-xs tracking-wider text-slate-200 uppercase">Issue New Asset Warranty</h4>
+                    <span class="text-[9px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-semibold animate-pulse">14-Day Configuration Scope</span>
+                </div>
+                
+                <form id="warranty-form" class="p-6 space-y-4 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Date of Purchase</label>
+                            <input type="date" id="form-date" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Time of Purchase</label>
+                            <input type="time" id="form-time" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Receipt Number</label>
+                            <input type="text" id="form-receipt" required placeholder="REC-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Variant Number</label>
+                            <input type="text" id="form-variant" required placeholder="v1, Gold, Leather, etc." class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Reference Number (Watch ID)</label>
+                            <input type="text" id="form-reference" required placeholder="REF-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Total Price (₱)</label>
+                            <input type="number" step="0.01" id="form-price" required placeholder="0.00" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Mode of Payment</label>
+                            <select id="form-payment" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300 cursor-pointer">
+                                <option value="" disabled selected class="text-slate-600">Select Mode</option>
+                                <option value="Cash">Cash</option>
+                                <option value="E-Wallet Transfer">E-Wallet Transfer</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Check">Check</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">
+                                Payment Ref No. <span id="ref-required-label" class="text-slate-600 font-normal transition-colors duration-300">(Required)</span>
+                            </label>
+                            <input type="text" id="form-payment-ref" required placeholder="Enter Reference Trace ID" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" id="form-submit-btn" class="w-full py-3 px-4 bg-amber-500/5 border border-amber-500/30 text-amber-400 hover:bg-amber-500/15 hover:border-amber-400/60 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-[0.98] hover:tracking-[0.15em] hover:shadow-md hover:shadow-amber-500/[0.04] flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                            <span id="submit-text">Push to Realtime Ledger Node</span>
+                            <svg id="submit-spinner" class="animate-spin h-3.5 w-3.5 text-amber-400 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Verification Lookup / Shared Links Output -->
+            <div class="space-y-6">
+                <div class="bg-[#0d0f14] border border-slate-800/50 p-5 rounded-xl space-y-4 shadow-xl transition-all duration-300 hover:border-slate-800">
+                    <div>
+                        <h4 class="font-luxury text-xs text-slate-200 tracking-wider uppercase">Asset Warranty Query</h4>
+                        <p class="text-[10px] text-slate-500 mt-1">Check verification strings directly via your unique URL generation footprint.</p>
+                    </div>
+                    <hr class="border-slate-800/60">
+                    <div class="space-y-3 text-xs">
+                        <div class="space-y-1 group">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Warranty Tracking Code</label>
+                            <input type="text" id="lookup-code" placeholder="Enter Unique URL Code Key" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        </div>
+                        <button id="lookup-btn" class="w-full py-2.5 px-4 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-slate-100 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                            <span id="lookup-text">Search Generated Code</span>
+                            <svg id="lookup-spinner" class="animate-spin h-3.5 w-3.5 text-slate-300 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dynamic output area for successfully generated items -->
+                <div id="output-card" class="hidden bg-[#0a0c11] border border-amber-500/20 p-5 rounded-xl space-y-3 shadow-2xl transition-all duration-500 scale-95 opacity-0">
+                    <div class="flex justify-between items-center">
+                        <h5 class="font-luxury text-[10px] text-amber-400 tracking-widest uppercase font-semibold">Active Ledger Generation Details</h5>
+                        <div id="out-status-badge"></div>
+                    </div>
+                    <hr class="border-slate-800/60">
+                    <div class="space-y-2 text-[11px]">
+                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Ref:</span> <span id="out-ref" class="text-slate-200 font-mono"></span></p>
+                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Receipt:</span> <span id="out-receipt" class="text-slate-200"></span></p>
+                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Timeline Out:</span> <span id="out-date-formatted" class="text-slate-200"></span></p>
+                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Settlement:</span> <span id="out-settlement" class="text-slate-200"></span></p>
+                        <p id="out-pref-row" class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Payment Ref:</span> <span id="out-pref-val" class="text-slate-400 font-mono"></span></p>
+                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Total Valuation:</span> <span id="out-price" class="text-emerald-400 font-mono"></span></p>
+                        <div class="pt-2 group/url">
+                            <label class="text-[9px] uppercase tracking-wider text-slate-400 block mb-1 transition-colors duration-300 group-hover-within/url:text-amber-400">Shareable Customer Warranty Link (Click to copy)</label>
+                            <input type="text" id="out-url" readonly class="w-full bg-[#050608] text-amber-500 border border-slate-800 text-[10px] font-mono rounded p-2 focus:outline-none cursor-pointer hover:border-amber-500/40 transition-all duration-300 select-all group-hover/url:bg-[#07090e]">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
 
     <script type="module">
-        // Import Firebase core setup modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        // Import Realtime Database configuration components explicitly
         import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your specific exact app configuration mapping rules
         const firebaseConfig = {
             apiKey: "AIzaSyAoyAOyfJsqlK_Pe6pmfA5cTexx0IOcH9g",
             authDomain: "moren-325fd.firebaseapp.com",
@@ -235,68 +239,140 @@
             measurementId: "G-1HDSV3V8P1"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const auth = getAuth(app);
-        // Correct initialization targeting custom regionalized URL endpoints explicitly
         const database = getDatabase(app);
 
-        // UI Binding Target Pointers
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-        const collapseBtn = document.getElementById('collapse-toggle-btn');
-        const mobileToggleBtn = document.getElementById('mobile-toggle-btn');
-        const overlay = document.getElementById('sidebar-overlay');
-        const toggleArrow = document.getElementById('toggle-arrow');
-        const brandName = document.getElementById('brand-name');
-        const labels = document.querySelectorAll('.sidebar-label');
+        // UI Target Selectors
         const logoutBtn = document.getElementById('logout-btn');
         const userEmailDisplay = document.getElementById('user-email-display');
         const userAvatar = document.getElementById('user-avatar');
-        
-        // Form & Output Layout Target references
         const warrantyForm = document.getElementById('warranty-form');
+        const paymentSelect = document.getElementById('form-payment');
+        const paymentRefInput = document.getElementById('form-payment-ref');
+        const refRequiredLabel = document.getElementById('ref-required-label');
+        
         const outputCard = document.getElementById('output-card');
         const lookupCodeInput = document.getElementById('lookup-code');
         const lookupBtn = document.getElementById('lookup-btn');
         const toastContainer = document.getElementById('toast-container');
+        const outUrlInput = document.getElementById('out-url');
 
-        let isCollapsed = false;
+        // Loading Indicators
+        const formSubmitBtn = document.getElementById('form-submit-btn');
+        const submitText = document.getElementById('submit-text');
+        const submitSpinner = document.getElementById('submit-spinner');
+        const lookupText = document.getElementById('lookup-text');
+        const lookupSpinner = document.getElementById('lookup-spinner');
 
-        // --- BOTTOM RIGHT TOAST SYSTEM ---
+        // Custom Modal Selectors
+        const logoutModal = document.getElementById('logout-modal');
+        const modalContainer = document.getElementById('modal-container');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalPromptState = document.getElementById('modal-prompt-state');
+        const modalLoadingState = document.getElementById('modal-loading-state');
+
+        paymentSelect.addEventListener('change', () => {
+            if (paymentSelect.value === 'Cash') {
+                paymentRefInput.required = false;
+                paymentRefInput.placeholder = "N/A (Cash Transaction)";
+                refRequiredLabel.innerText = "(Optional)";
+                refRequiredLabel.className = "text-slate-600 font-normal transition-colors duration-300";
+            } else {
+                paymentRefInput.required = true;
+                paymentRefInput.placeholder = "Enter Reference Trace ID";
+                refRequiredLabel.innerText = "(Required)";
+                refRequiredLabel.className = "text-amber-500 font-semibold transition-colors duration-300";
+            }
+        });
+
+        function formatToLongDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const dateObj = new Date(dateStr);
+            if (isNaN(dateObj.getTime())) return dateStr;
+            return dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function convertTimeTo12Hour(timeStr) {
+            if (!timeStr) return '';
+            const [hoursStr, minutesStr] = timeStr.split(':');
+            let hours = parseInt(hoursStr, 10);
+            const minutes = minutesStr || '00';
+            
+            if (isNaN(hours)) return timeStr;
+            
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            
+            return `${hours}:${minutes} ${ampm}`;
+        }
+
+        function getStatusBadgeHtml(purchaseDateStr) {
+            if (!purchaseDateStr) return '';
+            const purchaseDate = new Date(purchaseDateStr);
+            const expirationDate = new Date(purchaseDate);
+            expirationDate.setDate(purchaseDate.getDate() + 14);
+            
+            if (new Date() <= expirationDate) {
+                return `<span class="px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 animate-pulse">Active</span>`;
+            } else {
+                return `<span class="px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20">Expired</span>`;
+            }
+        }
+
+        function toggleButtonLoading(btn, textEl, spinnerEl, isWithdrawing = true, nativeText = "") {
+            if (isWithdrawing) {
+                btn.disabled = true;
+                textEl.innerText = "Processing Sequence...";
+                spinnerEl.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                textEl.innerText = nativeText;
+                spinnerEl.classList.add('hidden');
+            }
+        }
+
+        function revealOutputCard() {
+            outputCard.classList.remove('hidden');
+            setTimeout(() => {
+                outputCard.classList.remove('scale-95', 'opacity-0');
+                outputCard.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }
+
         function showNotification(message, status = 'success') {
             const toast = document.createElement('div');
             toast.className = `pointer-events-auto w-full p-4 rounded-xl border bg-[#0d0f14]/95 backdrop-blur-md shadow-2xl flex items-start gap-3 transition-all duration-300 transform translate-y-4 opacity-0 border-slate-800`;
-            
             const accentColorClass = status === 'success' ? 'text-amber-400' : 'text-rose-400';
             const iconSvg = status === 'success' 
                 ? `<svg class="w-4 h-4 mt-0.5 ${accentColorClass}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`
                 : `<svg class="w-4 h-4 mt-0.5 ${accentColorClass}" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>`;
 
-            toast.innerHTML = `
-                ${iconSvg}
-                <div class="flex-1 text-left">
-                    <p class="text-[11px] font-luxury tracking-wider ${accentColorClass} uppercase font-semibold">${status === 'success' ? 'Ledger Operational Event' : 'System Violation Failure'}</p>
-                    <p class="text-[10px] text-slate-300 mt-0.5 leading-relaxed font-sans-clean">${message}</p>
-                </div>
-            `;
-
+            toast.innerHTML = `${iconSvg}<div class="flex-1 text-left"><p class="text-[11px] font-luxury tracking-wider ${accentColorClass} uppercase font-semibold">${status === 'success' ? 'Ledger Event' : 'System Failure'}</p><p class="text-[10px] text-slate-300 mt-0.5 leading-relaxed font-sans-clean">${message}</p></div>`;
             toastContainer.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-y-4', 'opacity-0');
-            }, 10);
-
+            setTimeout(() => { toast.classList.remove('translate-y-4', 'opacity-0'); }, 10);
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-2');
                 setTimeout(() => { toast.remove(); }, 300);
-            }, 5000);
+            }, 4000);
         }
 
-        // --- SUBMIT AND PUSH TO REALTIME DATABASE ---
+        outUrlInput.addEventListener('click', async () => {
+            if (!outUrlInput.value) return;
+            try {
+                outUrlInput.select();
+                await navigator.clipboard.writeText(outUrlInput.value);
+                showNotification("Shareable warranty certificate link copied to clipboard.", "success");
+            } catch (err) {
+                showNotification("Clipboard writing access denied.", "error");
+            }
+        });
+
         warrantyForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            toggleButtonLoading(formSubmitBtn, submitText, submitSpinner, true);
 
             const warrantyData = {
                 purchaseDate: document.getElementById('form-date').value,
@@ -305,106 +381,142 @@
                 variantNumber: document.getElementById('form-variant').value,
                 referenceNumber: document.getElementById('form-reference').value,
                 totalPrice: Number(document.getElementById('form-price').value),
-                paymentMode: document.getElementById('form-payment').value,
+                paymentMode: paymentSelect.value,
+                paymentReference: paymentRefInput.value || '',
                 timestamp: Date.now()
             };
 
             try {
-                const warrantiesRef = ref(database, 'warranties');
-                const newWarrantyNode = push(warrantiesRef);
-                const completeUniqueCode = newWarrantyNode.key; 
+                const nodeRef = push(ref(database, 'warranties'));
+                await set(nodeRef, warrantyData);
 
-                // Write node payload variables onto the designated destination path
-                await set(newWarrantyNode, warrantyData);
+                const directoryPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                outUrlInput.value = `${window.location.origin}${directoryPath}/receipt.html?code=${nodeRef.key}`;
 
-                const generatedUrl = `${window.location.origin}${window.location.pathname}?code=${completeUniqueCode}`;
+                const longDateStr = formatToLongDate(warrantyData.purchaseDate);
+                const time12HourStr = convertTimeTo12Hour(warrantyData.purchaseTime);
 
-                // Update info presentation fields
                 document.getElementById('out-ref').innerText = warrantyData.referenceNumber;
                 document.getElementById('out-receipt').innerText = warrantyData.receiptNumber;
-                document.getElementById('out-price').innerText = `$${warrantyData.totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                document.getElementById('out-url').value = generatedUrl;
-
-                outputCard.classList.remove('hidden');
-                warrantyForm.reset();
+                document.getElementById('out-date-formatted').innerText = time12HourStr ? `${longDateStr} @ ${time12HourStr}` : longDateStr;
+                document.getElementById('out-settlement').innerText = warrantyData.paymentMode;
                 
-                // Show sliding notification confirmation inside the right hand screen corner interface
-                showNotification(`Warranty added successfully! Unique URL tracking key allocated: ${completeUniqueCode}`, 'success');
+                const outPrefRow = document.getElementById('out-pref-row');
+                if(warrantyData.paymentReference.trim() !== '') {
+                    document.getElementById('out-pref-val').innerText = warrantyData.paymentReference;
+                    outPrefRow.classList.remove('hidden');
+                } else {
+                    outPrefRow.classList.add('hidden');
+                }
 
+                document.getElementById('out-price').innerText = `₱${warrantyData.totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                document.getElementById('out-status-badge').innerHTML = getStatusBadgeHtml(warrantyData.purchaseDate);
+
+                revealOutputCard();
+                warrantyForm.reset();
+                paymentRefInput.placeholder = "Enter Reference Trace ID";
+                refRequiredLabel.innerText = "(Required)";
+                refRequiredLabel.className = "text-amber-500 font-semibold";
+                
+                showNotification(`Warranty initialized onto node successfully.`, 'success');
             } catch (err) {
-                console.error(err);
-                showNotification(`Database ledger write violation fallback error: ${err.message}`, 'error');
+                showNotification(`Ledger write violation error: ${err.message}`, 'error');
+            } finally {
+                toggleButtonLoading(formSubmitBtn, submitText, submitSpinner, false, "Push to Realtime Ledger Node");
             }
         });
 
-        // --- LOOKUP KEY HANDLER LOGIC ---
         async function queryWarrantyCode(codeKey) {
             if (!codeKey.trim()) return;
-            try {
-                const targetRef = ref(database, `warranties/${codeKey.trim()}`);
-                const snapshot = await get(targetRef);
+            toggleButtonLoading(lookupBtn, lookupText, lookupSpinner, true);
 
+            try {
+                const snapshot = await get(ref(database, `warranties/${codeKey.trim()}`));
                 if (snapshot.exists()) {
                     const data = snapshot.val();
+                    
+                    const longDateStr = formatToLongDate(data.purchaseDate);
+                    const time12HourStr = convertTimeTo12Hour(data.purchaseTime);
+                    
                     document.getElementById('out-ref').innerText = data.referenceNumber || 'N/A';
                     document.getElementById('out-receipt').innerText = data.receiptNumber || 'N/A';
-                    document.getElementById('out-price').innerText = `$${Number(data.totalPrice || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-                    document.getElementById('out-url').value = `${window.location.origin}${window.location.pathname}?code=${codeKey}`;
-                    outputCard.classList.remove('hidden');
-                    showNotification("Target warranty schema node mapping structure read cleanly from ledger pipeline.", "success");
+                    document.getElementById('out-date-formatted').innerText = time12HourStr ? `${longDateStr} @ ${time12HourStr}` : longDateStr;
+                    document.getElementById('out-settlement').innerText = data.paymentMode || 'N/A';
+                    
+                    const outPrefRow = document.getElementById('out-pref-row');
+                    if(data.paymentReference && data.paymentReference.trim() !== '') {
+                        document.getElementById('out-pref-val').innerText = data.paymentReference;
+                        outPrefRow.classList.remove('hidden');
+                    } else {
+                        outPrefRow.classList.add('hidden');
+                    }
+
+                    document.getElementById('out-price').innerText = `₱${Number(data.totalPrice || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    
+                    const directoryPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                    outUrlInput.value = `${window.location.origin}${directoryPath}/receipt.html?code=${codeKey}`;
+                    document.getElementById('out-status-badge').innerHTML = getStatusBadgeHtml(data.purchaseDate);
+
+                    revealOutputCard();
+                    showNotification("Target warranty schema structure verified.", "success");
                 } else {
-                    showNotification("Unable to map context signature reference against existing database records.", "error");
+                    showNotification("Signature token context location unmatched.", "error");
                 }
             } catch (err) {
-                showNotification(`System query pipeline disruption failure: ${err.message}`, "error");
+                showNotification(`Pipeline disruption error: ${err.message}`, "error");
+            } finally {
+                toggleButtonLoading(lookupBtn, lookupText, lookupSpinner, false, "Search Generated Code");
             }
         }
 
         lookupBtn.addEventListener('click', () => queryWarrantyCode(lookupCodeInput.value));
 
-        // --- AUTOMATED WINDOW INBOUND DEEP LINK PARSER ROUTINE ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const explicitCode = urlParams.get('code');
-            if (explicitCode) {
-                lookupCodeInput.value = explicitCode;
-                queryWarrantyCode(explicitCode);
-            }
-        });
-
-        // Basic Sidebar Interface Behaviors
-        collapseBtn.addEventListener('click', () => {
-            isCollapsed = !isCollapsed;
-            if (isCollapsed) {
-                sidebar.classList.remove('md:w-64'); sidebar.classList.add('md:w-20');
-                mainContent.classList.remove('md:ml-64'); mainContent.classList.add('md:ml-20');
-                brandName.classList.add('opacity-0');
-                labels.forEach(l => l.classList.add('opacity-0'));
-                toggleArrow.style.transform = 'rotate(180deg)';
-            } else {
-                sidebar.classList.remove('md:w-20'); sidebar.classList.add('md:w-64');
-                mainContent.classList.remove('md:ml-20'); mainContent.classList.add('md:ml-64');
-                brandName.classList.remove('opacity-0');
-                labels.forEach(l => l.classList.remove('opacity-0'));
-                toggleArrow.style.transform = 'rotate(0deg)';
-            }
-        });
-
-        mobileToggleBtn.addEventListener('click', () => { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden'); });
-        overlay.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); });
-
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                userEmailDisplay.innerText = user.email || "Authenticated Operator";
-                userAvatar.innerText = user.email ? user.email.substring(0, 2).toUpperCase() : "OP";
+                if(userEmailDisplay) userEmailDisplay.innerText = user.email || "Operator Node";
+                if(userAvatar) userAvatar.innerText = user.email ? user.email.substring(0, 2).toUpperCase() : "OP";
             } else {
-                window.location.href = "login.html";
+                window.location.href = "../index.html";
             }
         });
 
-        logoutBtn.addEventListener('click', async () => {
-            if(confirm("Terminate session?")) {
-                try { await signOut(auth); window.location.href = "login.html"; } catch (e) { alert(e.message); }
+        // Open Premium Center Modal with Soft Blur Backdrop 
+        logoutBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('pointer-events-none', 'opacity-0');
+            modalContainer.classList.remove('scale-95');
+            modalContainer.classList.add('scale-100');
+        });
+
+        // Dismiss Modal 
+        modalCancelBtn.addEventListener('click', () => {
+            logoutModal.classList.add('pointer-events-none', 'opacity-0');
+            modalContainer.classList.remove('scale-100');
+            modalContainer.classList.add('scale-95');
+        });
+
+        // Confirm Action & Disconnect
+        modalConfirmBtn.addEventListener('click', async () => {
+            try {
+                // Swap prompt form elements into internal spinner layout structure
+                modalPromptState.classList.add('hidden');
+                modalLoadingState.classList.remove('hidden');
+
+                // Fade out page content seamlessly 
+                document.getElementById('app-body').classList.remove('opacity-100');
+                document.getElementById('app-body').classList.add('opacity-0');
+
+                // Delayed sequencing window to enable full transition before route change
+                await new Promise(resolve => setTimeout(resolve, 700));
+
+                await signOut(auth);
+                window.location.href = "../index.html";
+            } catch (e) {
+                // Error handling states
+                modalLoadingState.classList.add('hidden');
+                modalPromptState.classList.remove('hidden');
+                document.getElementById('app-body').classList.remove('opacity-0');
+                document.getElementById('app-body').classList.add('opacity-100');
+                showNotification(`Logout structural breakdown: ${e.message}`, "error");
             }
         });
     </script>

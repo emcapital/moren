@@ -2,6 +2,8 @@ const CACHE_NAME = 'moren-v1';
 const ASSETS = [
   '/',
   '/index.html',
+  './components/receipt.html',
+  './components/warranty.html',
   'https://cdn.tailwindcss.com'
 ];
 
