@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght=400;600;700&family=Montserrat:wght=300;400;500;600&display=swap" rel="stylesheet">
     
     <style>
         .font-luxury { font-family: 'Cinzel', serif; }
@@ -29,14 +29,18 @@
             100% { transform: translateY(0); opacity: 1; }
         }
         .animate-load { animation: pageLoadUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Custom dynamic scrollbars */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #050608; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #451a03; }
     </style>
 </head>
-<body id="app-body" class="bg-[#050608] font-sans-clean text-slate-300 min-h-screen flex flex-col relative overflow-x-hidden transition-opacity duration-700 opacity-100">
+<body id="app-body" class="bg-[#050608] font-sans-clean text-slate-300 h-screen w-screen overflow-hidden flex flex-row relative transition-opacity duration-700 opacity-100">
 
-    <!-- Premium Custom Logout Confirmation Center Modal Overlay with Blur Background -->
-    <div id="logout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050608]/60 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div id="logout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050608]/70 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
         <div id="modal-container" class="w-full max-w-sm bg-[#0d0f14]/95 border border-slate-800/80 rounded-xl shadow-2xl p-6 text-center transform scale-95 transition-all duration-300">
-            <!-- Normal Confirmation State Context -->
             <div id="modal-prompt-state" class="space-y-4">
                 <div class="w-12 h-12 rounded-full border border-rose-500/20 bg-rose-500/5 flex items-center justify-center text-rose-400 mx-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -57,7 +61,6 @@
                 </div>
             </div>
 
-            <!-- Active Loading Execution State Context -->
             <div id="modal-loading-state" class="hidden flex flex-col items-center justify-center py-6 gap-4">
                 <svg class="animate-spin h-7 w-7 text-amber-500/80" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
@@ -68,165 +71,224 @@
         </div>
     </div>
 
-    <!-- Notification Container -->
     <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none max-w-sm w-full px-4 sm:px-0"></div>
 
-    <!-- Main Header View -->
-    <header class="h-20 border-b border-slate-800/60 bg-[#0d0f14]/40 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between shrink-0 relative z-20">
-        <div class="flex items-center gap-3 group cursor-pointer">
-            <div class="w-8 h-8 rounded-full border border-amber-500/40 flex items-center justify-center text-amber-400 text-xs font-luxury bg-amber-950/30 font-bold transition-all duration-500 group-hover:rotate-[360deg] group-hover:border-amber-400">M</div>
-            <h2 class="font-luxury text-xs sm:text-sm tracking-widest text-slate-100 transition-all duration-300 group-hover:tracking-[0.14em]">MOREN WARRANTY MANAGEMENT</h2>
-        </div>
-
-        <div class="flex items-center gap-4 sm:gap-6">
-            <div class="flex items-center gap-3 border-l border-slate-800/60 pl-4 h-8 text-left hidden sm:flex transition-transform duration-300 hover:translate-x-0.5">
-                <div id="user-avatar" class="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-200 uppercase shadow-inner">OP</div>
-                <div>
-                    <p id="user-email-display" class="text-[10px] font-semibold text-slate-300 tracking-wide">Loading Session...</p>
-                    <p class="text-[9px] text-emerald-500/80 tracking-wider flex items-center gap-1">
-                        <span class="w-1 h-1 rounded-full bg-emerald-400 animate-ping"></span> Secure Operator Node
-                    </p>
+    <aside class="w-20 md:w-64 border-r border-slate-800/60 bg-[#0d0f14]/80 backdrop-blur-md flex flex-col justify-between shrink-0 h-screen sticky top-0 left-0 z-30 transition-all duration-300">
+        <div class="flex flex-col h-full justify-between">
+            <div>
+                <div class="h-20 border-b border-slate-800/60 px-2 md:px-5 flex items-center justify-center md:justify-start gap-3 overflow-hidden shrink-0">
+                    <div class="w-9 h-9 min-w-[36px] rounded-full border border-amber-500/40 flex items-center justify-center text-amber-400 text-xs font-luxury bg-amber-950/30 font-bold shadow-lg shadow-amber-500/5 select-none">M</div>
+                    <h2 class="font-luxury text-[11px] tracking-[0.2em] text-slate-100 hidden md:block select-none whitespace-nowrap">MOREN PLATFORM</h2>
                 </div>
+
+                <nav class="p-2 md:p-4 space-y-2 pt-6 overflow-y-auto">
+                    <button id="nav-create-tab" class="w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3.5 px-2 md:px-4 py-3 rounded-lg text-[9px] md:text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 text-amber-400 border border-amber-500/20 bg-amber-500/5 shadow-md shadow-amber-950/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span class="text-center md:text-left tracking-normal md:tracking-wider">Issue</span>
+                    </button>
+
+                    <button id="nav-records-tab" class="w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3.5 px-2 md:px-4 py-3 rounded-lg text-[9px] md:text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 text-slate-400 border border-transparent hover:text-slate-100 hover:bg-slate-800/40">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z" />
+                        </svg>
+                        <span class="text-center md:text-left tracking-normal md:tracking-wider">Registry</span>
+                    </button>
+                </nav>
             </div>
-            
-            <!-- Responsive Logout Button: Only Icon on Mobile, Complete Metadata Profile on desktop Layout -->
-            <button id="logout-btn" class="group flex items-center gap-2 p-2.5 sm:px-3.5 sm:py-1.5 rounded-lg border border-rose-500/20 bg-rose-500/5 text-rose-400 hover:bg-rose-500/10 text-[10px] font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-95 hover:shadow-lg hover:shadow-rose-950/20" title="Log Out Session">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 sm:w-3.5 sm:h-3.5 transition-transform duration-300 group-hover:-translate-x-0.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
-                </svg>
-                <span class="hidden sm:inline">Log Out</span>
-            </button>
-        </div>
-    </header>
 
-    <!-- Main Content Grid -->
-    <main class="p-4 sm:p-8 space-y-6 max-w-7xl w-full mx-auto flex-1 opacity-0 animate-load">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Left Column: Registration Form -->
-            <div class="lg:col-span-2 bg-[#0d0f14] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl flex flex-col transition-all duration-300 hover:border-slate-800">
-                <div class="p-5 border-b border-slate-800/50 bg-[#11141c]/40 flex justify-between items-center">
-                    <h4 class="font-luxury text-xs tracking-wider text-slate-200 uppercase">Issue New Asset Warranty</h4>
-                    <span class="text-[9px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-semibold animate-pulse">14-Day Configuration Scope</span>
+            <div class="p-2 md:p-4 border-t border-slate-800/60 space-y-4 bg-[#0d0f14]/90 shrink-0">
+                <div class="items-center gap-3 hidden md:flex transition-transform duration-300 hover:translate-x-0.5">
+                    <div id="user-avatar" class="w-8 h-8 rounded-full border border-slate-700 bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-200 uppercase shadow-inner shrink-0">OP</div>
+                    <div class="overflow-hidden">
+                        <p id="user-email-display" class="text-[10px] font-semibold text-slate-300 tracking-wide truncate">Loading Session...</p>
+                        <p class="text-[9px] text-emerald-500/80 tracking-wider flex items-center gap-1">
+                            <span class="w-1 h-1 rounded-full bg-emerald-400 animate-ping"></span> Secure Node
+                        </p>
+                    </div>
                 </div>
+
+                <button id="logout-btn" class="w-full group flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 px-2 md:px-4 py-3 rounded-lg border border-rose-500/20 bg-rose-500/5 text-rose-400 hover:bg-rose-500/10 text-[9px] md:text-[10px] font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-95" title="Log Out Session">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 shrink-0 transition-transform duration-300 group-hover:-translate-x-0.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+                    </svg>
+                    <span class="hidden md:inline">Log Out</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        
+        <header class="h-20 border-b border-slate-800/60 bg-[#0d0f14]/40 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between shrink-0 relative z-20">
+            <div class="min-w-0">
+                <h1 id="panel-title" class="font-luxury text-[11px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] text-slate-100 uppercase truncate">Issue New Asset Warranty</h1>
+                <p id="panel-desc" class="text-[9px] sm:text-[10px] text-slate-500 mt-0.5 font-sans-clean truncate max-w-xl">Register and provision digital transaction certificate parameters onto the ledger node mapping network.</p>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div id="workspace-container" class="max-w-7xl w-full mx-auto opacity-0 animate-load">
                 
-                <form id="warranty-form" class="p-6 space-y-4 text-xs">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Date of Purchase</label>
-                            <input type="date" id="form-date" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                <div id="page-create" class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+                    
+                    <div class="lg:col-span-2 bg-[#0d0f14] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl flex flex-col transition-all duration-300 hover:border-slate-800">
+                        <div class="p-4 sm:p-5 border-b border-slate-800/50 bg-[#11141c]/40 flex flex-col sm:flex-row gap-2 justify-between sm:items-center">
+                            <h4 class="font-luxury text-xs tracking-wider text-slate-200 uppercase">Issue New Asset Warranty</h4>
+                            <span class="self-start sm:self-auto text-[8px] sm:text-[9px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full font-semibold animate-pulse">14-Day Configuration Scope</span>
                         </div>
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Time of Purchase</label>
-                            <input type="time" id="form-time" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
-                        </div>
+                        
+                        <form id="warranty-form" class="p-4 sm:p-6 space-y-5 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Date of Purchase</label>
+                                    <input type="date" id="form-date" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Time of Purchase</label>
+                                    <input type="time" id="form-time" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Receipt Number</label>
+                                    <input type="text" id="form-receipt" required placeholder="REC-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Variant Number</label>
+                                    <input type="text" id="form-variant" required placeholder="v1, Gold, Leather, etc." class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Reference Number (Watch ID)</label>
+                                    <input type="text" id="form-reference" required placeholder="REF-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Total Price (₱)</label>
+                                    <input type="number" step="0.01" id="form-price" required placeholder="0.00" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Mode of Payment</label>
+                                    <select id="form-payment" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300 cursor-pointer">
+                                        <option value="" disabled selected class="text-slate-600">Select Mode</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="E-Wallet Transfer">E-Wallet Transfer</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                        <option value="Check">Check</option>
+                                    </select>
+                                </div>
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">
+                                        Payment Ref No. <span id="ref-required-label" class="text-slate-600 font-normal transition-colors duration-300">(Required)</span>
+                                    </label>
+                                    <input type="text" id="form-payment-ref" required placeholder="Enter Reference Trace ID" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                            </div>
+
+                            <div class="pt-2">
+                                <button type="submit" id="form-submit-btn" class="w-full py-3.5 px-4 bg-amber-500/5 border border-amber-500/30 text-amber-400 hover:bg-amber-500/15 hover:border-amber-400/60 rounded-lg text-[10px] sm:text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-[0.98] hover:tracking-[0.15em] flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                                    <span id="submit-text">Push to Realtime Ledger Node</span>
+                                    <svg id="submit-spinner" class="animate-spin h-3.5 w-3.5 text-amber-400 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Receipt Number</label>
-                            <input type="text" id="form-receipt" required placeholder="REC-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                    <div class="space-y-6 lg:space-y-8 w-full">
+                        <div class="bg-[#0d0f14] border border-slate-800/50 p-4 sm:p-5 rounded-xl space-y-4 shadow-xl transition-all duration-300 hover:border-slate-800">
+                            <div>
+                                <h4 class="font-luxury text-xs text-slate-200 tracking-wider uppercase">Asset Warranty Query</h4>
+                                <p class="text-[10px] text-slate-500 mt-1">Check verification strings directly via your unique URL generation footprint.</p>
+                            </div>
+                            <hr class="border-slate-800/60">
+                            <div class="space-y-4 text-xs">
+                                <div class="space-y-1.5 group">
+                                    <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Warranty Tracking Code</label>
+                                    <input type="text" id="lookup-code" placeholder="Enter Unique URL Code Key" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                                </div>
+                                <button id="lookup-btn" class="w-full py-3 px-4 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-slate-100 rounded-lg text-[10px] sm:text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
+                                    <span id="lookup-text">Search Generated Code</span>
+                                    <svg id="lookup-spinner" class="animate-spin h-3.5 w-3.5 text-slate-300 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Variant Number</label>
-                            <input type="text" id="form-variant" required placeholder="v1, Gold, Leather, etc." class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
-                        </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Reference Number (Watch ID)</label>
-                            <input type="text" id="form-reference" required placeholder="REF-XXXXXX" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
+                        <div id="output-card" class="hidden bg-[#0a0c11] border border-amber-500/20 p-4 sm:p-5 rounded-xl space-y-4 shadow-2xl transition-all duration-500 scale-95 opacity-0">
+                            <div class="flex items-center justify-between gap-2">
+                                <h5 class="font-luxury text-[10px] text-amber-400 tracking-widest uppercase font-semibold truncate">Active Ledger Generation Details</h5>
+                                <div id="out-status-badge" class="shrink-0"></div>
+                            </div>
+                            <hr class="border-slate-800/60">
+                            <div class="space-y-2.5 text-[11px]">
+                                <p class="flex justify-between gap-4"><span class="text-slate-500 shrink-0">Ref:</span> <span id="out-ref" class="text-slate-200 font-mono truncate"></span></p>
+                                <p class="flex justify-between gap-4"><span class="text-slate-500 shrink-0">Receipt:</span> <span id="out-receipt" class="text-slate-200 truncate"></span></p>
+                                <p class="flex justify-between gap-4"><span class="text-slate-500 shrink-0">Timeline Out:</span> <span id="out-date-formatted" class="text-slate-200 truncate"></span></p>
+                                <p class="flex justify-between gap-4"><span class="text-slate-500 shrink-0">Settlement:</span> <span id="out-settlement" class="text-slate-200 truncate"></span></p>
+                                <p id="out-pref-row" class="flex justify-between gap-4"><span class="text-slate-500 shrink-0">Payment Ref:</span> <span id="out-pref-val" class="text-slate-400 font-mono truncate"></span></p>
+                                <p class="flex justify-between gap-4 pt-1 border-t border-slate-900"><span class="text-slate-500 shrink-0">Total Valuation:</span> <span id="out-price" class="text-emerald-400 font-mono font-semibold"></span></p>
+                                <div class="pt-3 group/url">
+                                    <label class="text-[9px] uppercase tracking-wider text-slate-400 block mb-1.5 font-medium">Shareable Customer Warranty Link (Click to copy)</label>
+                                    <input type="text" id="out-url" readonly class="w-full bg-[#050608] text-amber-500 border border-slate-800 text-[10px] font-mono rounded-lg p-2.5 focus:outline-none cursor-pointer hover:border-amber-500/40 transition-all duration-300 select-all group-hover/url:bg-[#07090e]">
+                                </div>
+                            </div>
                         </div>
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Total Price (₱)</label>
-                            <input type="number" step="0.01" id="form-price" required placeholder="0.00" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Mode of Payment</label>
-                            <select id="form-payment" required class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300 cursor-pointer">
-                                <option value="" disabled selected class="text-slate-600">Select Mode</option>
-                                <option value="Cash">Cash</option>
-                                <option value="E-Wallet Transfer">E-Wallet Transfer</option>
-                                <option value="Bank Transfer">Bank Transfer</option>
-                                <option value="Check">Check</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">
-                                Payment Ref No. <span id="ref-required-label" class="text-slate-600 font-normal transition-colors duration-300">(Required)</span>
-                            </label>
-                            <input type="text" id="form-payment-ref" required placeholder="Enter Reference Trace ID" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
-                        </div>
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" id="form-submit-btn" class="w-full py-3 px-4 bg-amber-500/5 border border-amber-500/30 text-amber-400 hover:bg-amber-500/15 hover:border-amber-400/60 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-[0.98] hover:tracking-[0.15em] hover:shadow-md hover:shadow-amber-500/[0.04] flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
-                            <span id="submit-text">Push to Realtime Ledger Node</span>
-                            <svg id="submit-spinner" class="animate-spin h-3.5 w-3.5 text-amber-400 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Right Column: Verification Lookup / Shared Links Output -->
-            <div class="space-y-6">
-                <div class="bg-[#0d0f14] border border-slate-800/50 p-5 rounded-xl space-y-4 shadow-xl transition-all duration-300 hover:border-slate-800">
-                    <div>
-                        <h4 class="font-luxury text-xs text-slate-200 tracking-wider uppercase">Asset Warranty Query</h4>
-                        <p class="text-[10px] text-slate-500 mt-1">Check verification strings directly via your unique URL generation footprint.</p>
-                    </div>
-                    <hr class="border-slate-800/60">
-                    <div class="space-y-3 text-xs">
-                        <div class="space-y-1 group">
-                            <label class="text-[10px] uppercase tracking-wider text-slate-400 block font-medium transition-colors duration-300 group-focus-within:text-amber-400">Warranty Tracking Code</label>
-                            <input type="text" id="lookup-code" placeholder="Enter Unique URL Code Key" class="w-full bg-[#050608] border border-slate-800 rounded-lg p-2.5 text-slate-200 placeholder-slate-700 focus:outline-none focus:border-amber-500/50 focus:bg-[#080a0f] transition-all duration-300">
-                        </div>
-                        <button id="lookup-btn" class="w-full py-2.5 px-4 bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-slate-100 rounded-lg text-xs font-semibold tracking-wider uppercase transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none">
-                            <span id="lookup-text">Search Generated Code</span>
-                            <svg id="lookup-spinner" class="animate-spin h-3.5 w-3.5 text-slate-300 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </button>
                     </div>
                 </div>
 
-                <!-- Dynamic output area for successfully generated items -->
-                <div id="output-card" class="hidden bg-[#0a0c11] border border-amber-500/20 p-5 rounded-xl space-y-3 shadow-2xl transition-all duration-500 scale-95 opacity-0">
-                    <div class="flex justify-between items-center">
-                        <h5 class="font-luxury text-[10px] text-amber-400 tracking-widest uppercase font-semibold">Active Ledger Generation Details</h5>
-                        <div id="out-status-badge"></div>
-                    </div>
-                    <hr class="border-slate-800/60">
-                    <div class="space-y-2 text-[11px]">
-                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Ref:</span> <span id="out-ref" class="text-slate-200 font-mono"></span></p>
-                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Receipt:</span> <span id="out-receipt" class="text-slate-200"></span></p>
-                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Timeline Out:</span> <span id="out-date-formatted" class="text-slate-200"></span></p>
-                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Settlement:</span> <span id="out-settlement" class="text-slate-200"></span></p>
-                        <p id="out-pref-row" class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Payment Ref:</span> <span id="out-pref-val" class="text-slate-400 font-mono"></span></p>
-                        <p class="transition-transform duration-300 hover:translate-x-0.5"><span class="text-slate-500">Total Valuation:</span> <span id="out-price" class="text-emerald-400 font-mono"></span></p>
-                        <div class="pt-2 group/url">
-                            <label class="text-[9px] uppercase tracking-wider text-slate-400 block mb-1 transition-colors duration-300 group-hover-within/url:text-amber-400">Shareable Customer Warranty Link (Click to copy)</label>
-                            <input type="text" id="out-url" readonly class="w-full bg-[#050608] text-amber-500 border border-slate-800 text-[10px] font-mono rounded p-2 focus:outline-none cursor-pointer hover:border-amber-500/40 transition-all duration-300 select-all group-hover/url:bg-[#07090e]">
+                <div id="page-records" class="hidden space-y-4">
+                    <div class="bg-[#0d0f14] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl flex flex-col">
+                        <div class="p-4 sm:p-5 border-b border-slate-800/50 bg-[#11141c]/40 flex flex-col sm:flex-row gap-2 justify-between sm:items-center">
+                            <h4 class="font-luxury text-xs tracking-wider text-slate-200 uppercase">System Warranty Registry Logs</h4>
+                            <span id="record-count-badge" class="self-start sm:self-auto text-[8px] sm:text-[9px] uppercase tracking-widest bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-0.5 rounded-full font-semibold">0 Entries Tracked</span>
+                        </div>
+                        
+                        <div class="overflow-x-auto w-full">
+                            <table class="w-full text-[11px] text-left text-slate-400 whitespace-nowrap min-w-[900px]">
+                                <thead class="text-[9px] uppercase tracking-wider bg-[#10121a]/60 text-slate-400 border-b border-slate-800/80">
+                                    <tr>
+                                        <th class="py-4 px-5 font-semibold">Purchase Date</th>
+                                        <th class="py-4 px-4 font-semibold">Receipt No.</th>
+                                        <th class="py-4 px-4 font-semibold">Reference ID</th>
+                                        <th class="py-4 px-4 font-semibold">Variant Structure</th>
+                                        <th class="py-4 px-4 font-semibold">Payment Mode</th>
+                                        <th class="py-4 px-4 font-semibold">Valuation</th>
+                                        <th class="py-4 px-4 stroke-slate-500 font-semibold text-center">Status</th>
+                                        <th class="py-4 px-5 font-semibold text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="records-table-body" class="divide-y divide-slate-800/30">
+                                    <tr id="table-loading-placeholder">
+                                        <td colspan="8" class="py-16 text-center text-slate-600 font-medium font-luxury tracking-widest uppercase">
+                                            Scanning Active Ledger Nodes...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-    </main>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, push, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAoyAOyfJsqlK_Pe6pmfA5cTexx0IOcH9g",
@@ -243,7 +305,17 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // UI Target Selectors
+        // Core Sidebar & Single-Page View Selectors
+        const navCreateTab = document.getElementById('nav-create-tab');
+        const navRecordsTab = document.getElementById('nav-records-tab');
+        const pageCreate = document.getElementById('page-create');
+        const pageRecords = document.getElementById('page-records');
+        const panelTitle = document.getElementById('panel-title');
+        const panelDesc = document.getElementById('panel-desc');
+        const recordsTableBody = document.getElementById('records-table-body');
+        const recordCountBadge = document.getElementById('record-count-badge');
+
+        // UI Form & Input View Target Selectors
         const logoutBtn = document.getElementById('logout-btn');
         const userEmailDisplay = document.getElementById('user-email-display');
         const userAvatar = document.getElementById('user-avatar');
@@ -258,20 +330,106 @@
         const toastContainer = document.getElementById('toast-container');
         const outUrlInput = document.getElementById('out-url');
 
-        // Loading Indicators
+        // Loading Progress Indicators
         const formSubmitBtn = document.getElementById('form-submit-btn');
         const submitText = document.getElementById('submit-text');
         const submitSpinner = document.getElementById('submit-spinner');
         const lookupText = document.getElementById('lookup-text');
         const lookupSpinner = document.getElementById('lookup-spinner');
 
-        // Custom Modal Selectors
+        // Custom Modal Components
         const logoutModal = document.getElementById('logout-modal');
         const modalContainer = document.getElementById('modal-container');
         const modalCancelBtn = document.getElementById('modal-cancel-btn');
         const modalConfirmBtn = document.getElementById('modal-confirm-btn');
         const modalPromptState = document.getElementById('modal-prompt-state');
         const modalLoadingState = document.getElementById('modal-loading-state');
+
+        // Single Page Switching Logic Engine
+        function transitionTabState(activeTab, targetPage) {
+            navCreateTab.className = "w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3.5 px-2 md:px-4 py-3 rounded-lg text-[9px] md:text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 text-slate-400 border border-transparent hover:text-slate-100 hover:bg-slate-800/40";
+            navRecordsTab.className = "w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3.5 px-2 md:px-4 py-3 rounded-lg text-[9px] md:text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 text-slate-400 border border-transparent hover:text-slate-100 hover:bg-slate-800/40";
+            
+            if (activeTab === 'create') {
+                navCreateTab.className = "w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3.5 px-2 md:px-4 py-3 rounded-lg text-[9px] md:text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 text-amber-400 border border-amber-500/20 bg-amber-500/5 shadow-md shadow-amber-950/10";
+                pageCreate.classList.remove('hidden');
+                pageRecords.classList.add('hidden');
+                panelTitle.innerText = "Issue New Asset Warranty";
+                panelDesc.innerText = "Register and provision digital transaction certificate parameters onto the ledger node mapping network.";
+            } else {
+                navRecordsTab.className = "w-full flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3.5 px-2 md:px-4 py-3 rounded-lg text-[9px] md:text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 text-amber-400 border border-amber-500/20 bg-amber-500/5 shadow-md shadow-amber-950/10";
+                pageCreate.classList.add('hidden');
+                pageRecords.classList.remove('hidden');
+                panelTitle.innerText = "System Warranty Registry Logs";
+                panelDesc.innerText = "Access historical ledger profiles, read transactional references, and copy verified customer distribution targets.";
+            }
+        }
+
+        navCreateTab.addEventListener('click', () => transitionTabState('create'));
+        navRecordsTab.addEventListener('click', () => transitionTabState('records'));
+
+        // Real-Time Firebase Database Synchronization Pipeline
+        function initializeRealtimeRegistryListener() {
+            const registryDbRef = ref(database, 'warranties');
+            onValue(registryDbRef, (snapshot) => {
+                recordsTableBody.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    recordsTableBody.innerHTML = `<tr><td colspan="8" class="py-12 text-center text-slate-600 font-medium font-luxury tracking-widest uppercase">No verified warranty entries located.</td></tr>`;
+                    recordCountBadge.innerText = "0 Entries Tracked";
+                    return;
+                }
+
+                let entriesCount = 0;
+                const directoryPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                
+                snapshot.forEach((childSnapshot) => {
+                    const keyId = childSnapshot.key;
+                    const val = childSnapshot.val();
+                    entriesCount++;
+
+                    const longDateStr = formatToLongDate(val.purchaseDate);
+                    const time12HourStr = convertTimeTo12Hour(val.purchaseTime);
+                    const parsedPrice = `₱${Number(val.totalPrice || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                    const targetCertificateLink = `${window.location.origin}${directoryPath}/receipt.html?code=${keyId}`;
+                    const activeStatusHtml = getStatusBadgeHtml(val.purchaseDate);
+
+                    const tableRow = document.createElement('tr');
+                    tableRow.className = "hover:bg-slate-900/30 transition-colors duration-150 border-b border-slate-800/20";
+                    tableRow.innerHTML = `
+                        <td class="py-4 px-5 text-slate-200 font-medium">${longDateStr} <span class="text-slate-500 text-[10px] block font-normal mt-0.5">${time12HourStr}</span></td>
+                        <td class="py-4 px-4 font-mono text-slate-300">${val.receiptNumber || 'N/A'}</td>
+                        <td class="py-4 px-4 font-mono text-amber-500/90">${val.referenceNumber || 'N/A'}</td>
+                        <td class="py-4 px-4 text-slate-400 truncate max-w-[140px]">${val.variantNumber || 'N/A'}</td>
+                        <td class="py-4 px-4 text-slate-300">${val.paymentMode || 'N/A'}</td>
+                        <td class="py-4 px-4 font-mono text-emerald-400 font-medium">${parsedPrice}</td>
+                        <td class="py-4 px-4 text-center">${activeStatusHtml}</td>
+                        <td class="py-4 px-5 text-right">
+                            <button data-url="${targetCertificateLink}" class="registry-copy-btn text-[9px] px-3 py-1.5 text-slate-400 bg-slate-800 border border-slate-700 rounded-lg hover:text-slate-100 hover:bg-slate-700 transition-all duration-200 uppercase font-semibold tracking-wider">
+                                Copy Link
+                            </button>
+                        </td>
+                    `;
+                    recordsTableBody.prepend(tableRow);
+                });
+
+                recordCountBadge.innerText = `${entriesCount} Entries Tracked`;
+
+                document.querySelectorAll('.registry-copy-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const copyTargetString = e.currentTarget.getAttribute('data-url');
+                        try {
+                            await navigator.clipboard.writeText(copyTargetString);
+                            showNotification("Warranty receipt linkage mapped to clipboard.", "success");
+                        } catch (err) {
+                            showNotification("System write access clipboard error.", "error");
+                        }
+                    });
+                });
+            });
+        }
+
+        initializeRealtimeRegistryListener();
 
         paymentSelect.addEventListener('change', () => {
             if (paymentSelect.value === 'Cash') {
@@ -299,13 +457,10 @@
             const [hoursStr, minutesStr] = timeStr.split(':');
             let hours = parseInt(hoursStr, 10);
             const minutes = minutesStr || '00';
-            
             if (isNaN(hours)) return timeStr;
-            
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
             hours = hours ? hours : 12;
-            
             return `${hours}:${minutes} ${ampm}`;
         }
 
@@ -314,9 +469,8 @@
             const purchaseDate = new Date(purchaseDateStr);
             const expirationDate = new Date(purchaseDate);
             expirationDate.setDate(purchaseDate.getDate() + 14);
-            
             if (new Date() <= expirationDate) {
-                return `<span class="px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 animate-pulse">Active</span>`;
+                return `<span class="px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active</span>`;
             } else {
                 return `<span class="px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20">Expired</span>`;
             }
@@ -434,7 +588,6 @@
                 const snapshot = await get(ref(database, `warranties/${codeKey.trim()}`));
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    
                     const longDateStr = formatToLongDate(data.purchaseDate);
                     const time12HourStr = convertTimeTo12Hour(data.purchaseTime);
                     
@@ -480,38 +633,29 @@
             }
         });
 
-        // Open Premium Center Modal with Soft Blur Backdrop 
         logoutBtn.addEventListener('click', () => {
             logoutModal.classList.remove('pointer-events-none', 'opacity-0');
             modalContainer.classList.remove('scale-95');
             modalContainer.classList.add('scale-100');
         });
 
-        // Dismiss Modal 
         modalCancelBtn.addEventListener('click', () => {
             logoutModal.classList.add('pointer-events-none', 'opacity-0');
             modalContainer.classList.remove('scale-100');
             modalContainer.classList.add('scale-95');
         });
 
-        // Confirm Action & Disconnect
         modalConfirmBtn.addEventListener('click', async () => {
             try {
-                // Swap prompt form elements into internal spinner layout structure
                 modalPromptState.classList.add('hidden');
                 modalLoadingState.classList.remove('hidden');
-
-                // Fade out page content seamlessly 
                 document.getElementById('app-body').classList.remove('opacity-100');
                 document.getElementById('app-body').classList.add('opacity-0');
 
-                // Delayed sequencing window to enable full transition before route change
                 await new Promise(resolve => setTimeout(resolve, 700));
-
                 await signOut(auth);
                 window.location.href = "../index.html";
             } catch (e) {
-                // Error handling states
                 modalLoadingState.classList.add('hidden');
                 modalPromptState.classList.remove('hidden');
                 document.getElementById('app-body').classList.remove('opacity-0');
@@ -519,6 +663,8 @@
                 showNotification(`Logout structural breakdown: ${e.message}`, "error");
             }
         });
+
+        document.getElementById('workspace-container').classList.remove('opacity-0');
     </script>
 </body>
 </html>
